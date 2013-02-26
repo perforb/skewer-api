@@ -1,0 +1,4 @@
+- このファイルはゆるい ChangeLog 的なものです
+- このプロジェクトの名前はとりあえず skewer-api(由来：各種 API をラップして横断的に外部APIをコールするといった構想から)
+- 現時点で実装している api は flickr.photos.getInfo のみ
+- twitter v1.1 の search api も急いで対応させる
