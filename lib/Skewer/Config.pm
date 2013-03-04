@@ -8,20 +8,21 @@ use Config::Pit;
 
 my $pit = pit_get('api.w-scape.net');
 
-common +{
-    twitter_api_key    => $pit->{twitter_api_key},
-    twitter_secret_key => $pit->{twitter_secret_key},
-    flickr_api_key     => $pit->{flickr_api_key},
-    flickr_secret_key  => $pit->{flickr_secret_key},
-    redis_dsn          => $pit->{redis_dsn},
+common + {
+    flickr_api_key              => $pit->{flickr_api_key},
+    flickr_secret_key           => $pit->{flickr_secret_key},
+    twitter_consumer_key        => $pit->{twitter_consumer_key},
+    twitter_consumer_secret     => $pit->{twitter_consumer_secret},
+    twitter_access_token        => $pit->{twitter_access_token},
+    twitter_access_token_secret => $pit->{twitter_access_token_secret},
 };
 
 config development => +{
-    dummy => 'dummy',
+    redis_dsn => '127.0.0.1:6379',
 };
 
 config production => +{
-    dummy => 'dummy',
+    redis_dsn => '127.0.0.1:6379',
 };
 
 1;

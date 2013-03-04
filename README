@@ -1,8 +1,8 @@
-This is a wrapper API for executing external API.
+skewer-api relays a request to the external API.
 
 OVERVIEW
 
-    client -> reverse-proxy -> backend(this) -> external-api
+    client -> reverse-proxy -> backend(skewer-api) -> external-api
 
 SETUP
 
@@ -11,23 +11,24 @@ SETUP
     % git clone git@github.com:perforb/skewer-api.git
     % cd skewer-api
     % carton install
-    % env EDITOR=vi carton exec -Ilib -- ppit set <your_domain>
+    % env EDITOR=vi carton exec -Ilib -- ppit set <any_key>
 
     --
     "flickr_api_key": '**********'
     "flickr_secret_key": '**********'
-    "twitter_api_key": '**********'
-    "twitter_secret_key": '**********'
-    "redis_dsn": '127.0.0.1:6379'
+    "twitter_consumer_key": '**********'
+    "twitter_consumer_secret": '**********'
+    "twitter_access_token": '**********'
+    "twitter_access_token_secret": '**********'
 
     % vi lib/Skewer/Config.pm
     ...
-    my $pit = pit_get('<your_domain>');
+    my $pit = pit_get('<any_key>');
 
 STARTUP
 
     % cd skewer-api
-    % carton exec -Ilib -- plackup -s Starman -E production app.psgi -p 5000 --daemonize
+    % carton exec -Ilib -- plackup -s Starman -E production app.psgi -p <port> --daemonize
 
 STOP
 
@@ -36,3 +37,12 @@ STOP
 STATUS
 
     % pgrep -lf starman
+
+SEE ALSO
+
+    https://github.com/miyagawa/cpanminus
+    https://github.com/miyagawa/carton
+    https://github.com/miyagawa/Starman
+    https://github.com/plack/Plack
+    http://search.cpan.org/~satoh/Config-Pit/bin/ppit
+    http://redis.io/

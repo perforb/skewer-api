@@ -27,8 +27,9 @@ builder {
         sub {
             my $env = shift;
             my $req = Plack::Request->new($env);
-            my $res = Skewer::API::Twitter->call($req);
-            return $res->finalize;
+            my $twi = Skewer::API::Twitter->new({ req => $req });
+            my $res = $twi->call;
+            $res->finalize;
         }
     };
 
@@ -37,32 +38,25 @@ builder {
         sub {
             my $env = shift;
             my $req = Plack::Request->new($env);
-            my $res = Skewer::API::Flickr->call($req);
-            return $res->finalize;
+            my $fli = Skewer::API::Flickr->new({ req => $req });
+            my $res = $fli->call;
+            $res->finalize;
         }
     };
 };
 
 sub configure_log {
     my (%options) = @_;
-
-    my $filepath = File::Spec->catdir(dirname(__FILE__), 'config', 'log.conf');
-
-    if (-f $filepath) {
-        Log::Dispatch::Config->configure($filepath);
+    my $fname = File::Spec->catdir(dirname(__FILE__), 'config', 'log.conf');
+    if (-f $fname) {
+        Log::Dispatch::Config->configure($fname);
         return;
     }
-
-    open(my $fh, '>', $filepath)
-        or Carp::croak "Unable to create $filepath: $!";
-
+    open(my $fh, '>', $fname) or Carp::croak "Cannot create $fname: $!";
     for (keys %options) {
         print {$fh} "$_=$options{$_}\n"
-            or Carp::croak "Unable to write to $filepath: $!";
+            or Carp::croak "Cannot write to $fname: $!";
     }
-
-    close $fh
-        or Carp::croak "Unable to close $filepath: $!";
-
-    Log::Dispatch::Config->configure($filepath);
+    close $fh or Carp::croak "Cannot close $fname: $!";
+    Log::Dispatch::Config->configure($fname);
 }
