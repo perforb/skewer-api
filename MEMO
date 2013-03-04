@@ -17,3 +17,4 @@
             - libcurl と libcurl-devel 必須(CentOS6.x)
         - http://blog.nishimiyahara.net/2012/11/nettwitterlite.html
     - api の制限
+    - Redis の中身を１時間ごとにクリアする
