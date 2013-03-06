@@ -46,3 +46,9 @@ SEE ALSO
     https://github.com/plack/Plack
     http://search.cpan.org/~satoh/Config-Pit/bin/ppit
     http://redis.io/
+
+LICENCE
+
+Copyright (C) perforb
+
+This library is free software; you can redistribute it and/or modify it under the same terms as Perl itself.
