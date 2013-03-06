@@ -1,9 +1,8 @@
 === MEMO ===
 * このファイルは ChangeLog 的な役割も兼ねたメモです
 * 何のためにつくったか
-    - skewer-api は外部 API へのリクエストを一元的に管理するために作成
-    - 別につくってるサービスで、いままでは jQuery から直接 twitter の REST API をコールしていたが、
-      v1.1 になってそうもいかなくなったから
+    - 外部 API へのリクエストを一元的に管理するために作成
+    - jQuery から直接 twitter の REST API をコールできなくなったため
 * 現時点で実装している api は flickr.photos.getInfo のみ
     - cpan に上がってる Flickr 関連のモジュールは JSON に対応していなかったりといまいち。
       なので WebService::Simple で flickr-api をコールしている
@@ -15,9 +14,9 @@
     - Net::Twitter::Lite での twitter api のレスポンスが異様に遅い
         - LWP::Protocol::Net::Curl を導入することで解消
             - libcurl と libcurl-devel 必須(CentOS6.x)
-        - http://blog.nishimiyahara.net/2012/11/nettwitterlite.html
+            - http://blog.nishimiyahara.net/2012/11/nettwitterlite.html
     - api の制限について
-    - Redis の中身を１時間ごとにクリアする
-        - 同じキーワードでの検索は１時間キャッシュしておく
-        - cron で指定したデータベースのデータを削除するようにした
+    - Redis 保存したデータを１時間ごとにクリアする
+        - api の利用回数制限の対策として、同じキーワードでの検索は１時間キャッシュしておく
+        - cron で以下のように定期処理を実行
         - 5 * * * * /path/to/redis-cli < /path/to/redis-commands.txt
