@@ -107,11 +107,11 @@ sub search_tweets {
     );
     $nt->access_token(config->param('twitter_access_token'));
     $nt->access_token_secret(config->param('twitter_access_token_secret'));
-    {
-        my $method = $params->{method};
-        my $allowing_keys = $twitter_api->{$method}->{allowing_keys};
-        $params = $self->reduce_query_params($params, $allowing_keys, [qw/callback/]);
-    }
+
+    my $method = $params->{method};
+    my $allowing_keys = $twitter_api->{$method}->{allowing_keys};
+    $params = $self->reduce_query_params($params, $allowing_keys, [qw/callback/]);
+
     my $res = $nt->search($params);
     $json   = encode_json($res);
     $redis->set($key => $json);

@@ -73,14 +73,14 @@ sub flickr_photos_getinfo {
     my $redis  = Redis->new('server' => config->param('redis_dsn'));
     my $key    = join('-', $params->{photo_id}, $params->{method});
     my $json   = $redis->get($key);
+
     return $self->respond(200, $self->content_type, $json)
         if defined $json;
 
-    {
-        my $method = $params->{method};
-        my $allowing_keys = $flickr_api->{$method}->{allowing_keys};
-        $params = $self->reduce_query_params($params, $allowing_keys);
-    }
+    my $method = $params->{method};
+    my $allowing_keys = $flickr_api->{$method}->{allowing_keys};
+    $params = $self->reduce_query_params($params, $allowing_keys);
+
     my $flickr = WebService::Simple->new(
         base_url => $self->rest_url,
         param    => $params,

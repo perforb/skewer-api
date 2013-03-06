@@ -9,3 +9,4 @@ local
 log/ws*
 sandbox
 config/log.conf
+script/cron

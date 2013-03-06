@@ -14,7 +14,7 @@ configure_log(
     'file.class'     => 'Log::Dispatch::File',
     'file.min_level' => 'debug',
     'file.max_level' => 'emergency',
-    'file.filename'  => File::Spec->catdir(dirname(__FILE__), 'log', 'ws-api.log'),
+    'file.filename'  => File::Spec->catdir(dirname(__FILE__), 'log', 'skewer-api.log'),
     'file.mode'      => 'append',
     'file.format'    => '[%d] [%p] %m at %F line %L%n',
 );

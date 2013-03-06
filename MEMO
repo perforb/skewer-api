@@ -1,14 +1,14 @@
 === MEMO ===
-* このファイルは ChangeLog 的なゆるいメモです
+* このファイルは ChangeLog 的な役割も兼ねたメモです
 * 何のためにつくったか
-    - skewer-api は外部 API へのリクエストを一元的に管理するためにつくりました。
-    - 別につくってるサービスで、いままでは jQuery から直接 twitter の REST API をコールしてましたが、
+    - skewer-api は外部 API へのリクエストを一元的に管理するために作成
+    - 別につくってるサービスで、いままでは jQuery から直接 twitter の REST API をコールしていたが、
       v1.1 になってそうもいかなくなったから
 * 現時点で実装している api は flickr.photos.getInfo のみ
-    - cpan に上がってる Flickr 関連のモジュールは JSON に対応していなかったりといまいち
+    - cpan に上がってる Flickr 関連のモジュールは JSON に対応していなかったりといまいち。
       なので WebService::Simple で flickr-api をコールしている
 * twitter v1.1 の search api も利用しているので急いで対応させる
-    - 対応した
+    - 対応完了
     - Net::Twitter::Lite は、現時点で v1.1 に対応していないのでソースコードを修正する必要がある
         - こちらの記事を参考にさせてもらいました
         - http://qiita.com/items/4c9c43908fae001bd69d
@@ -16,5 +16,8 @@
         - LWP::Protocol::Net::Curl を導入することで解消
             - libcurl と libcurl-devel 必須(CentOS6.x)
         - http://blog.nishimiyahara.net/2012/11/nettwitterlite.html
-    - api の制限
+    - api の制限について
     - Redis の中身を１時間ごとにクリアする
+        - 同じキーワードでの検索は１時間キャッシュしておく
+        - cron で指定したデータベースのデータを削除するようにした
+        - 5 * * * * /path/to/redis-cli < /path/to/redis-commands.txt
