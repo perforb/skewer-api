@@ -34,7 +34,7 @@ builder {
     };
 
     mount '/flickr' => builder {
-        enable 'JSONP', callback_key => 'callback';
+        enable 'JSONP', callback_key => 'jsoncallback';
         sub {
             my $env = shift;
             my $req = Plack::Request->new($env);

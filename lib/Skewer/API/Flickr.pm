@@ -12,9 +12,16 @@ use Project::Libs;
 use parent 'Skewer::API';
 use Skewer::Config;
 
-my %flickr_api = (
-    'flickr.photos.getInfo' => \&flickr_photos_getinfo,
-);
+my $flickr_api = +{
+    'flickr.photos.getInfo' => +{
+        method => \&flickr_photos_getinfo,
+        allowing_keys => [qw/
+            photo_id
+            method
+            jsoncallback
+        /],
+    },
+};
 
 __PACKAGE__->mk_accessors(qw/
     req
@@ -44,16 +51,13 @@ sub call {
         Carp::croak "method is required."
             unless defined $method;
         Carp::croak "method is not found."
-            unless defined $flickr_api{$method};
+            unless defined $flickr_api->{$method}->{method};
 
-        $flickr_api{$method}->($self);
+        $flickr_api->{$method}->{method}->($self);
     };
 
     if ($@) {
-        $self->req->logger->({
-            level   => 'error',
-            message => "Caught the error: $@",
-        });
+        $self->error("Caught the error: $@");
         return $self->respond(500, $self->content_type, encode_json({
             error => 'Internal server error',
         }));
@@ -65,40 +69,30 @@ sub call {
 sub flickr_photos_getinfo {
     my ($self) = @_;
 
-    my $photo_id = $self->req->param('id') || Carp::croak "photo id is required.";
-    my $callback = $self->req->param('callback');
-    my $method   = $self->req->param('method');
-
-    $photo_id =~ m/^\d+$/
-        or Carp::croak "photo id is not a number.";
-    $callback =~ m/^\w+$/
-        or Carp::croak "invalid format." if defined $callback;
-
-    my $redis = Redis->new('server' => config->param('redis_dsn'));
-    my $key   = "${photo_id}.${method}";
-    my $json  = $redis->get($key);
+    my $params = $self->req->query_parameters->as_hashref;
+    my $redis  = Redis->new('server' => config->param('redis_dsn'));
+    my $key    = join('-', $params->{photo_id}, $params->{method});
+    my $json   = $redis->get($key);
     return $self->respond(200, $self->content_type, $json)
         if defined $json;
 
-    my $params = +{
-        api_key      => config->param('flickr_api_key'),
-        secret       => config->param('flickr_secret_key'),
-        method       => 'flickr.photos.getInfo',
-        format       => 'json',
-        photo_id     => $photo_id,
-        jsoncallback => $callback,
-    };
-
-    delete $params->{jsoncallback}
-        unless defined $params->{jsoncallback};
-
+    {
+        my $method = $params->{method};
+        my $allowing_keys = $flickr_api->{$method}->{allowing_keys};
+        $params = $self->reduce_query_params($params, $allowing_keys);
+    }
     my $flickr = WebService::Simple->new(
         base_url => $self->rest_url,
         param    => $params,
         response_parser => 'JSON',
     );
 
-    $json = encode_json($flickr->get->parse_response);
+    my $res = $flickr->get({
+        api_key => config->param('flickr_api_key'),
+        secret  => config->param('flickr_secret_key'),
+        format  => 'json',
+    })->parse_response;
+    $json = encode_json($res);
     $redis->set($key => $json);
 
     return $self->respond(200, $self->content_type, $json);

@@ -76,10 +76,7 @@ sub call {
         else {
             $message = $@;
         }
-        $self->req->logger->({
-            level   => 'error',
-            message => "Caught the error: ${message}",
-        });
+        $self->error("Caught the error: ${message}");
         return $self->respond(500, $self->content_type, encode_json({
             error => 'Internal server error',
         }));
@@ -110,30 +107,16 @@ sub search_tweets {
     );
     $nt->access_token(config->param('twitter_access_token'));
     $nt->access_token_secret(config->param('twitter_access_token_secret'));
-    $params = reduce_query_params($params, [qw/callback/]);
+    {
+        my $method = $params->{method};
+        my $allowing_keys = $twitter_api->{$method}->{allowing_keys};
+        $params = $self->reduce_query_params($params, $allowing_keys, [qw/callback/]);
+    }
     my $res = $nt->search($params);
     $json   = encode_json($res);
     $redis->set($key => $json);
 
     return $self->respond(200, $self->content_type, $json);
-}
-
-sub reduce_query_params {
-    my ($params, $exclusion_list) = @_;
-
-    $exclusion_list ||= [];
-    my $new_params = +{};
-    my $method = $params->{method};
-    my $allowing_keys = $twitter_api->{$method}->{allowing_keys};
-    for (@{ $allowing_keys }) {
-        $new_params->{$_} = $params->{$_}
-            if defined $params->{$_};
-    }
-    for (@{ $exclusion_list }) {
-        delete $new_params->{$_}
-            if defined $new_params->{$_};
-    }
-    return $new_params;
 }
 
 1;

@@ -6,7 +6,7 @@
       v1.1 になってそうもいかなくなったから
 * 現時点で実装している api は flickr.photos.getInfo のみ
     - cpan に上がってる Flickr 関連のモジュールは JSON に対応していなかったりといまいち
-    - なので WebService::Simple で flickr-api をコールしている
+      なので WebService::Simple で flickr-api をコールしている
 * twitter v1.1 の search api も利用しているので急いで対応させる
     - 対応した
     - Net::Twitter::Lite は、現時点で v1.1 に対応していないのでソースコードを修正する必要がある

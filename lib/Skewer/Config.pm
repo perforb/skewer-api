@@ -8,7 +8,7 @@ use Config::Pit;
 
 my $pit = pit_get('api.w-scape.net');
 
-common + {
+common +{
     flickr_api_key              => $pit->{flickr_api_key},
     flickr_secret_key           => $pit->{flickr_secret_key},
     twitter_consumer_key        => $pit->{twitter_consumer_key},
