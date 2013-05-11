@@ -1,8 +1,10 @@
+use strict;
+use warnings;
+
 use Plack::Builder;
 use Plack::Request;
 use File::Spec;
 use File::Basename;
-use Carp ();
 use Log::Dispatch::Config;
 
 use Project::Libs;
@@ -27,8 +29,9 @@ builder {
         sub {
             my $env = shift;
             my $req = Plack::Request->new($env);
-            my $twi = Skewer::API::Twitter->new({ req => $req });
-            my $res = $twi->call;
+            my $res = Skewer::API::Twitter->new({
+                req => $req,
+            })->call;
             $res->finalize;
         }
     };
@@ -38,8 +41,9 @@ builder {
         sub {
             my $env = shift;
             my $req = Plack::Request->new($env);
-            my $fli = Skewer::API::Flickr->new({ req => $req });
-            my $res = $fli->call;
+            my $res = Skewer::API::Flickr->new({
+                req => $req,
+            })->call;
             $res->finalize;
         }
     };
@@ -47,16 +51,19 @@ builder {
 
 sub configure_log {
     my (%options) = @_;
+
     my $fname = File::Spec->catdir(dirname(__FILE__), 'config', 'log.conf');
     if (-f $fname) {
         Log::Dispatch::Config->configure($fname);
         return;
     }
-    open(my $fh, '>', $fname) or Carp::croak "Cannot create $fname: $!";
+    open(my $fh, '>', $fname)
+        or die "Cannot create the $fname: $!";
     for (keys %options) {
         print {$fh} "$_=$options{$_}\n"
-            or Carp::croak "Cannot write to $fname: $!";
+            or die "Cannot write to $fname: $!";
     }
-    close $fh or Carp::croak "Cannot close $fname: $!";
+    close $fh
+        or die "Cannot close the $fname: $!";
     Log::Dispatch::Config->configure($fname);
 }

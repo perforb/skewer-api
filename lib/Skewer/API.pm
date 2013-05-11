@@ -25,15 +25,15 @@ sub respond {
 }
 
 sub reduce_query_params {
-    my ($self, $params, $allowing_keys, $exclusion_list) = @_;
+    my ($self, $params, $allowing_keys, $exclusion_keys) = @_;
 
-    $exclusion_list ||= [];
+    $exclusion_keys ||= [];
     my $new_params = +{};
     for (@{ $allowing_keys }) {
         $new_params->{$_} = $params->{$_}
             if exists $params->{$_};
     }
-    for (@{ $exclusion_list }) {
+    for (@{ $exclusion_keys }) {
         delete $new_params->{$_}
             if exists $new_params->{$_};
     }
